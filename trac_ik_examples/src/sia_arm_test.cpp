@@ -166,7 +166,7 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
 
 void transform_to_base(double end[])
 {
-  double world[] = {1.0, 0.1, -0.2};
+  double world[] = {0.5, 0.0, 0.0};
 
   for (size_t i = 0; i < 3; i++)
   {

@@ -128,11 +128,32 @@
     <limit lower="${-75.0/180.0 * pi}" upper="${75.0/180.0 * pi}" effort="28.0" velocity="3.2"/>
   </joint>
 
-    <joint name="joint6" type="revolute">
+  <joint name="joint6" type="revolute">
     <parent link="link6"/>
     <child link="tool"/>
     <origin xyz="0 ${wrist_3_length} 0" rpy="-1.57 0 0" />
     <axis xyz="0 0 1" />
     <limit lower="${-175.0/180.0 * pi}" upper="${175.0/180.0 * pi}" effort="28.0" velocity="3.2"/>
   </joint>
+
+
+  <!--define eef link and joint7-->
+  <xacro:property name="eef_length" value="0.2" />
+
+  <link name="eef" >
+    <visual>
+      <origin xyz="0 0 -${eef_length/2.0}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="${eef_length}" radius="${radius_of_cylinder}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="joint7" type="fixed">
+    <parent link="tool"/>
+    <child link="eef"/>
+    <origin xyz="0 0 ${eef_length}" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+  </joint>
+
 </robot>
