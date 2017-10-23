@@ -8,7 +8,6 @@
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find sia_arm_description)/urdf/sia_robot.urdf.xacro'" />
 
-
   <!--<node name="trac_ik_tests" pkg="trac_ik_examples" type="ik_tests" output="screen">-->
   <node name="trac_ik_tests" pkg="trac_ik_examples" type="sia_arm_test" output="screen">
     <param name="num_samples" value="$(arg num_samples)"/>

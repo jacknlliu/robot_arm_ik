@@ -171,6 +171,7 @@ void transform_to_base(double end[])
   for (size_t i = 0; i < 3; i++)
   {
     end[i] = end[i] - world[i];
+    // end[i]  = end[i]/2.0; // use ratio to translation origin data
   }
 
 }
@@ -234,8 +235,7 @@ void read_data_from_file(const char filename[], std::vector<KDL::Frame> & end_ef
         i--;
         end_effector_pose_list.pop_back();
 
-        std::cout<<"We read "<<i<<" lines from file"<<std::endl;
-        std::cout<<"To confirm"<<end_effector_pose_list.size()<<std::endl;
+        std::cout<<"We read "<<i<<" lines from file, and actually we will use "<< end_effector_pose_list.size() <<std::endl;
         fin.close();
      } else
      {
@@ -276,24 +276,39 @@ void save_to_file(const char output_filename[], int rc,  KDL::JntArray result)
 }
 
 
-// void wrap_to_joint_state(boost::shared_ptr<sensor_msgs::JointState> msg, KDL::JntArray result)
-// {
-//       msg->name.resize(6);
+void wrap_to_joint_state(sensor_msgs::JointState & msg, KDL::JntArray result)
+{
+      msg.name.resize(6);
+      msg.header.stamp = ros::Time::now(); // very important for rviz
+      std::ostringstream oss;
       
-//       for (size_t i = 0; i < 6; i++)
-//       {
-//         msg->name[i] = "joint1";
-//       }
-      
-// }
+      for (size_t i = 0; i < 6; i++)
+      {
+        oss.clear();
+        oss<<"joint"<<(i+1);
+        msg.name[i] = oss.str();
+        oss.str("");
+      }
 
+      msg.position.resize(6);
+
+      for (size_t i = 0; i < msg.position.size(); i++)
+      {
+        msg.position[i] = result.data(i);
+      }
+            
+}
 
 
 void generateIK(ros::NodeHandle& nh, std::string chain_start, std::string chain_end, double timeout, std::string urdf_param)
 {
-    // ros::Publisher chatter_pub = nh.advertise<std_msgs::JointState>("chatter", 1000);
+    ros::Publisher chatter_pub = nh.advertise<sensor_msgs::JointState>("/joint_states", 1000);
 
-    // std_msgs::JointState msg;
+    sensor_msgs::JointState msg;
+
+    ros::Rate loop_rate(10);
+
+    int replay_num = 10;
 
 
     const char output_filename[] = "/data/ik-catkin_ws/output.txt";
@@ -341,8 +356,18 @@ void generateIK(ros::NodeHandle& nh, std::string chain_start, std::string chain_
 
   read_data_from_file(input_filename, end_effector_pose_list);
 
+  for (size_t count = 0; count < replay_num; count++)
+  { // replay ten times
+
+
   for (size_t i = 0; i < end_effector_pose_list.size(); i++)
   {
+      if (!ros::ok())
+      {
+        return;
+      }
+      
+
       end_effector_pose = end_effector_pose_list[i];
 
       for (size_t j = 0; j < 3; j++)
@@ -368,16 +393,26 @@ void generateIK(ros::NodeHandle& nh, std::string chain_start, std::string chain_
       if (rc<0) {
         // ROS_INFO(" failed!");
         // save "fail"  to file
-        save_to_file(output_filename, rc, result);
+        if (count == 0)
+        {
+         save_to_file(output_filename, rc, result);
+        }
       } else {
         // save joint data to file
         ROS_INFO("GET Solution!");
-        save_to_file(output_filename, rc, result);
+        if (count == 0)
+        {
+          save_to_file(output_filename, rc, result);
+        }
 
-        // wrap_to_joint_state(msg, result);
-        // chatter_pub.publish(msg);
+        wrap_to_joint_state(msg, result);
+        chatter_pub.publish(msg);
+        loop_rate.sleep();
       }
+      ros::spinOnce();
   }
+
+  } // end `for` aobut `count`, end replay
 }
 
 
