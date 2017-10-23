@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<robot name="sia_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!--define DH parameters-->
+  <xacro:property name="sia_robot_d1" value="0.089159" />
+  <xacro:property name="sia_robot_a2" value="-0.42500" />
+  <xacro:property name="sia_robot_a3" value="-0.39225" />
+  <xacro:property name="sia_robot_d4" value="0.10915" />
+  <xacro:property name="sia_robot_d5" value="0.09465" />
+  <xacro:property name="sia_robot_d6" value="0.0823" />
+
+  <!--link lenght used in this model for relative coordinate of joint-->
+  <!-- link lengths used in model -->
+  <!--<xacro:property name="shoulder_height" value="${sia_robot_d1}" />
+  <xacro:property name="upper_arm_length" value="${-sia_robot_d2}" />
+  <xacro:property name="forearm_length" value="${-sia_robot_d3}" />
+  <xacro:property name="wrist_1_length" value="${sia_robot_d4 - 0.1 - 0.2}" />
+  <xacro:property name="wrist_2_length" value="${sia_robot_d5}" />
+  <xacro:property name="wrist_3_length" value="${sia_robot_d6}" />-->
+  <xacro:property name="shoulder_height" value="0.1" />
+  <xacro:property name="upper_arm_length" value="0.22625" />
+  <xacro:property name="forearm_length" value="0.64" />
+  <xacro:property name="wrist_1_length" value="0.1747" />
+  <xacro:property name="wrist_2_length" value="0.1747" />
+  <xacro:property name="wrist_3_length" value="0.2834" />
+  
+  <xacro:property name="radius_of_cylinder" value="0.05" />
+
+
+
+<!--world frame is the joint0 frame as default-->
+
+  <link name="link1" >
+    <visual>
+      <origin xyz="0 0 ${shoulder_height/2.0}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="${shoulder_height}" radius="${radius_of_cylinder}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name="link2" >
+    <visual>
+      <origin xyz="0 0 -${upper_arm_length/2.0}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="${upper_arm_length}" radius="${radius_of_cylinder}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name="link3" >
+    <visual>
+      <origin xyz="${forearm_length/2.0} 0 0" rpy="${-pi/2.0} 0 ${-pi/2.0}"/>
+      <geometry>
+        <cylinder length="${forearm_length}" radius="${radius_of_cylinder}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name="link4" >
+    <visual>
+    <origin xyz="0 ${wrist_1_length/2.0} 0" rpy="${-pi/2.0} 0 0"/>
+      <geometry>
+        <cylinder length="${wrist_1_length}" radius="${radius_of_cylinder}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name="link5" >
+    <visual>
+      <origin xyz=" 0 0 ${ - wrist_2_length/2.0}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="${wrist_2_length}" radius="${radius_of_cylinder}"/>
+      </geometry>
+    </visual>
+  </link>
+
+<link name="link6" >
+    <visual>
+      <origin xyz="0 ${wrist_3_length/2.0} 0" rpy="${-pi/2.0} 0 0"/>
+      <geometry>
+        <cylinder length="${wrist_3_length}" radius="${radius_of_cylinder}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name="tool" />
+
+  <joint name="joint1" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <!--<origin xyz="0 0 ${shoulder_height}" rpy="0 0 0" />-->
+    <origin xyz="0 0 ${shoulder_height+upper_arm_length}" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <!--<limit lower="${-pi}" upper="${pi}" effort="150.0" velocity="3.15"/>-->
+    <limit lower="${-175.0/180.0 * pi}" upper="${175.0/180.0 * pi}" effort="150.0" velocity="3.15"/>
+  </joint>
+
+  <joint name="joint2" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0 0 0" rpy="${pi/2.0} -${pi/2.0} 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="${-pi/4.0}" upper="${pi/4.0}" effort="150.0" velocity="3.15"/>
+  </joint>
+
+  <joint name="joint3" type="revolute">
+    <parent link="link3"/>
+    <child link="link4"/>
+    <origin xyz="${forearm_length} 0 0" rpy="0 0 -1.57" />
+    <axis xyz="0 0 1" />
+    <limit lower="${-75.0/180.0 * pi}" upper="${75.0/180.0 * pi}" effort="150.0" velocity="3.15"/>
+  </joint>
+
+    <joint name="joint4" type="revolute">
+    <parent link="link4"/>
+    <child link="link5"/>
+    <origin xyz="0 0.3494 0" rpy="-1.57 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="${-175.0/180.0 * pi}" upper="${175.0/180.0 * pi}" effort="28.0" velocity="3.2"/>
+  </joint>
+
+    <joint name="joint5" type="revolute">
+    <parent link="link5"/>
+    <child link="link6"/>
+    <origin xyz="0 0 0" rpy="1.57 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="${-75.0/180.0 * pi}" upper="${75.0/180.0 * pi}" effort="28.0" velocity="3.2"/>
+  </joint>
+
+    <joint name="joint6" type="revolute">
+    <parent link="link6"/>
+    <child link="tool"/>
+    <origin xyz="0 ${wrist_3_length} 0" rpy="-1.57 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="${-175.0/180.0 * pi}" upper="${175.0/180.0 * pi}" effort="28.0" velocity="3.2"/>
+  </joint>
+</robot>
