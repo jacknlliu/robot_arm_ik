@@ -155,8 +155,6 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
 
   ROS_INFO_STREAM("TRAC-IK found "<<success<<" solutions ("<<100.0*success/num_samples<<"\%) with an average of "<<total_time/num_samples<<" secs per sample");
 
-
-
 }
 
 
