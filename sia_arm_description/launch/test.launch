@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find sia_arm_description)/urdf/sia_robot.urdf.xacro'" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find sia_arm_description)/urdf/sia_robot_visual_fix.urdf.xacro'" />
 
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
         <param name="use_gui" value="true"/>
@@ -9,5 +9,4 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find sia_arm_description)/test/urdf_test.rviz" required="true" />
-
 </launch>

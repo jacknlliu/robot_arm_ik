@@ -311,8 +311,9 @@ void generateIK(ros::NodeHandle& nh, std::string chain_start, std::string chain_
     int replay_num = 10;
 
 
-    const char output_filename[] = "/data/ik-catkin_ws/output.txt";
-    const char input_filename[] = "/data/ik-catkin_ws/rotateMaxData.txt";
+    const char output_filename[] = "/data/sia_robot_merge/sia_robot/sia_robot_ik-catkin_ws/output1.txt";
+    // const char input_filename[] = "/data/ik-catkin_ws/rotateMaxData.txt";
+    const char input_filename[] = "/data/sia_robot_merge/sia_robot/sia_robot_ik-catkin_ws/rotateMaxData.txt";
 
     double eps = 1e-5;
 
